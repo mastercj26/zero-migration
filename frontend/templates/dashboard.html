@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Process Migration Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .server { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+        .online { background-color: #e6ffe6; }
+        .offline { background-color: #ffe6e6; }
+        button { padding: 8px 15px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+    </style>
+</head>
+<body>
+    <h1>Process Migration Dashboard</h1>
+    
+    {% for server_name, data in servers.items() %}
+    <div class="server {% if 'error' not in data %}online{% else %}offline{% endif %}">
+        <h2>{{ server_name }}</h2>
+        {% if 'error' in data %}
+            <p>Status: <strong>Offline</strong></p>
+        {% else %}
+            <p>Status: <strong>Online</strong></p>
+            <p>PID: {{ data.pid }}</p>
+            <p>Requests served: {{ data.requests_served }}</p>
+            <p>Uptime: {{ "%.2f"|format(data.uptime) }} seconds</p>
+            <button onclick="migrateTo('{{ server_name }}')">Migrate to this server</button>
+        {% endif %}
+    </div>
+    {% endfor %}
+    
+    <script>
+        function migrateTo(target) {
+            fetch('/migrate?target=' + target)
+                .then(response => response.json())
+                .then(data => {
+                    alert('Migration initiated: ' + data.status);
+                    setTimeout(() => location.reload(), 1000);
+                });
+        }
+    </script>
+</body>
+</html>

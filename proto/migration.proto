@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package processmigration;
+
+service ProcessMigration {
+    rpc Checkpoint (CheckpointRequest) returns (CheckpointResponse);
+    rpc Restore (RestoreRequest) returns (RestoreResponse);
+    rpc Migrate (MigrateRequest) returns (MigrateResponse);
+}
+
+message CheckpointRequest {
+    int32 pid = 1;
+}
+
+message CheckpointResponse {
+    string filename = 1;
+}
+
+message RestoreRequest {
+    string filename = 1;
+}
+
+message RestoreResponse {
+    int32 pid = 1;
+    string status = 2;
+}
+
+message MigrateRequest {
+    int32 source_pid = 1;
+    string target_host = 2;
+}
+
+message MigrateResponse {
+    int32 target_pid = 1;
+    string status = 2;
+}
